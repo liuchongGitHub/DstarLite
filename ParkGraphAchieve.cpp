@@ -79,6 +79,14 @@ void Graph::CreatGraph()
 			
 		}
 	}
+	
+	string filename = "C:\\Users\\chongliu\\Desktop\\华人运通\\轨迹规划\\VisualStudiocode\\message.txt";
+	gfstream.open(filename, ios::out);
+	if (gfstream.bad())
+	{
+		cout << "打开文件出错" << endl;
+		return;
+	}
 	/*cout << "输出每条边的基础权值（顶点从0到" << vernum-1 << "） 例0 1 10 "<<endl;
 	for (size_t i = 0; i < edgenum; i++)
 	{
@@ -110,6 +118,7 @@ Graph::~Graph()
 		delete finish[i];
 	}
 	delete finish;
+	gfstream.close();
 }
 //计算start与target的曼哈顿距离即h
 int Graph::Manhattan(int start, int target)
@@ -205,6 +214,7 @@ bool Graph::Requirevehicle() {
 void Graph::Caculatekey(int name) {
 	Vertex& v = vertex[name];
 	 v.key2 = v.g > v.rhs ? v.rhs : v.g;
+	 //if (v.g > v.rhs) { v.g = v.rhs; }
 	 v.key1 = Add(v.key2 , Manhattan(start, name));
 }
 //更新节点
@@ -247,15 +257,17 @@ void Graph::UpdateVertex(int name) {
 		}
 		Caculatekey(name);
 		//如果点发生改变则显示出来
+		
 		if (oldver.g!= ver.g || oldver.rhs != ver.rhs || oldver.next!=ver.next ) {
 			Vertex* s = &oldver;
-			cout << "*****************************"<<endl;
+			gfstream << "*****************************"<<endl;
 			Showvertex(s);
-			cout << "改变为： " << endl;
+			gfstream << "改变为： " << endl;
 			Showvertex(ver.name);
-			cout << "*****************************"<<endl;
-			cout << "\n";
-		}/*
+			gfstream << "*****************************"<<endl;
+			gfstream << "\n";
+		}
+		/*
 		if (point!=NULL && point->name!= ver.next->name) {
 			cout << name << "点原next=" << point->name << " 现next=" << ver.next->name << "    " << name
 				<< ".rhs=" << vertex[name].rhs << " next.g=" << vertex[name].next->g << endl;
@@ -289,18 +301,18 @@ void Graph::UpdateVertex(int name) {
 	if (ver.g != ver.rhs)
 	{ 
 		Vertex* s = &vertex[name]; 
-		Caculatekey(name);
+		//Caculatekey(name);
 		openlist.push(s);
 		if (s->g < s->rhs) { openlistcountglessrhs++; }
 		s->isinopen = true;
-		//cout <<name<< " 点加入openlist"<<endl;
+		gfstream <<name<< " 点加入openlist"<<endl;
 		//Showvertex(name);
 
 		auto ifincloselist = closelist.find(s);
 		if (ifincloselist!=closelist.end())
 		{
 			closelist.erase(ifincloselist);
-			cout << "delete closelist point:" << s->name << endl;
+			gfstream << "delete closelist point:" << s->name << endl;
 		}
 	}
 	else {
@@ -313,34 +325,37 @@ void Graph::UpdateVertex(int name) {
 }
 //计算最短路径
 void Graph::Computepath() {
-	cout << "计算从" << start << "到" << goal << "的最短路径" << endl;
+	gfstream << "计算从" << start << "到" << goal << "的最短路径" << endl;
 	//Showopenlist();
 	clock_t time1 = clock();
-	while (Compare_key(openlist.top()->name,start) || vertex[start].g!=vertex[start].rhs ||
-		openlistcountglessrhs!=0)
+	while (Compare_key(openlist.top()->name,start) || vertex[start].g!=vertex[start].rhs 
+		|| openlistcountglessrhs!=0)
 	{
 		
-		//cout << "compute path openlist------------------------------------------"<<endl;
+		gfstream << "compute path openlist------------------------------------------"<<endl;
 		Vertex* s = openlist.top();
 		openlist.pop();
 		if (s->g < s->rhs)openlistcountglessrhs--;
 		s->isinopen = false;
 		if ((s->g) > (s->rhs) )
 		{
+			
 			s->g = s->rhs;
+			Caculatekey(s->name);
 			closelist.insert(s);
 			vector<int> neighbor=GetNeighbor(s->name);
 			for (auto beg=neighbor.begin(),end=neighbor.end();beg!=end;beg++)
 			{
 				UpdateVertex(*beg);
 			}
-			
-		}
+		
+		}		
 		else
 		{
+			
 			s->g = INT_MAX;
 			closelist.erase(s);
-			cout << " delete point "<<s->name <<endl;
+			gfstream << " delete point "<<s->name <<endl;
 			UpdateVertex(s->name);
 			vector<int> neighbor = GetNeighbor(s->name);
 			for (auto beg = neighbor.begin(), end = neighbor.end(); beg != end; beg++)
@@ -349,12 +364,15 @@ void Graph::Computepath() {
 			}
 			
 		}
+		if (openlist.empty()) { cout << "openlist empty" << endl; }
 		//输出openlist中的点信息
-		cout << "完成一次compute--------------------------------------------"<<endl;
+		//cout << "完成一次compute--------------------------------------------"<<endl;
+		//cout << "完成一次compute--------------------------------------------"<<endl;
 		Showopenlist();
 		Showcloselist();
+		if (openlist.empty())break;
 	}//while (Compare_key(openlist.top()->name,start) || vertex[start].g!=vertex[start].rhs)
-	//cout << "compute while finish" << endl;
+	//gfstream << "compute while finish" << endl;
 	//查看所有next不为null的点的next指向
 	//cout << "查看所有next不为null的点的next指向--------------------------------------------" << endl;
 	/*for (size_t i = 0; i < vernum; i++)
@@ -374,31 +392,41 @@ void Graph::Computepath() {
 	}
 	clock_t time2 = clock();
 	//打印输出最短路径
-	Vertex *vpath = &path.front();
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
-	cout << "最短路径：         ";
-	int distance=0;
 	
-	while (vpath!=NULL)
-	{
-		cout << vpath->name;
-		int front= vpath->name;
-		int real = vpath->name;
+	if (!path.empty()) {
+		Vertex *vpath = &path.front();
 
-		if (vpath->next!=NULL)
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
+		cout << "最短路径：         ";
+		gfstream << "最短路径：         ";
+		int distance = 0;
+
+		while (vpath != NULL)
 		{
-			cout << "->";
-			 real = vpath->next->name;
-		}
-		vpath = vpath->next;
-		distance = distance + totalweight[front][real];
-		
-	}
+			cout << vpath->name;
+			gfstream << vpath->name;
+			int front = vpath->name;
+			int real = vpath->name;
 
-	cout << "total:"<<distance;
-	cout << endl;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-	cout << "耗时：" << time2 - time1 << " ms" << endl;
+			if (vpath->next != NULL)
+			{
+				cout << "->";
+				gfstream << "->";
+				real = vpath->next->name;
+			}
+			vpath = vpath->next;
+			distance = distance + totalweight[front][real];
+
+		}
+
+		cout << "total:" << distance;
+		cout << endl;
+		gfstream << "total:" << distance;
+		gfstream << endl;
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+		cout << "耗时：" << time2 - time1 << " ms" << endl;
+		gfstream << "耗时：" << time2 - time1 << " ms" << endl;
+	}
 	Dijkstra();
 }
 //name1.key<name2.key?
@@ -438,7 +466,9 @@ void Graph::Mainmethod() {
 		while (time<7.5 && start != goal)
 		{
 			path.pop();
+			
 			Vertex next = path.front();
+			
 			time =time+ totalweight[start][next.name] / speed;
 			finish[start][next.name]++;
 			finish[next.name][start]++;
@@ -448,9 +478,9 @@ void Graph::Mainmethod() {
 				weight[next.name][start] = INT_MAX;
 
 			}
-			cout << " 点 "<<start<<"点走过"<<endl;
+			gfstream << " 点 "<<start<<"点走过"<<endl;
 			Setstartandend( next.name,goal);
-			cout <<" 点 "<< start <<" 设为新起始点" <<endl;
+			gfstream <<" 点 "<< start <<" 设为新起始点" <<endl;
 		}//while (time<7.5 && start != goal)
 		//记录原先的权值
 		int** oldweight;
@@ -466,7 +496,7 @@ void Graph::Mainmethod() {
 		//从停车场接受路面变化
 		bool ifchange= RequirevehicleFromWindowsFile(lastfilename);
 		if (ifchange){
-			cout << " 路径权发生变化" << endl;
+			gfstream << " 路径权发生变化" << endl;
 			//对变化权边的两个端点及其邻居加入update list
 			for (size_t i = 0; i < vernum; i++)
 			{
@@ -504,7 +534,7 @@ void Graph::Mainmethod() {
 				updatelist.pop();
 				UpdateVertex(s->name);
 			}
-			cout << " 变权端点更新点完成"<<endl;
+			gfstream << " 变权端点更新点完成"<<endl;
 			//释放oldweight
 			for (size_t i = 0; i < vernum; i++)
 			{
@@ -519,8 +549,8 @@ void Graph::Mainmethod() {
 			{
 				UpdateVertex((*beg)->name);
 			}
-			Showcloselist();
-			cout << "重新计算路径" << endl;
+			//Showcloselist();
+			gfstream << "重新计算路径" << endl;
 			Computepath();
 		}//if (ifchange)
 	}//while (start!=goal)
@@ -528,46 +558,46 @@ void Graph::Mainmethod() {
 //展示点的信息
 void Graph::Showvertex(int name) {
 	Vertex v=vertex[name];
-	cout << "name=" << v.name << "  " << "g=";
-	if (v.g == INT_MAX) { cout << "∞"; }
-	else{cout << v.g;} 
-	cout << "  " << "rhs=";
-	if (v.rhs == INT_MAX) { cout << "∞"; }
-	else {cout << v.rhs;}
-	cout << "  " << "isinopen=" << v.isinopen << "  key1=";
-	if (v.key1==INT_MAX) { cout << "∞"; }
-	else { cout << v.key1; }
-	cout << "  key2=";
-	if (v.key2==INT_MAX) { cout << "∞"; }
-	else { cout<< v.key2; }
+	gfstream << "name=" << v.name << "  " << "g=";
+	if (v.g == INT_MAX) { gfstream << "∞"; }
+	else{ gfstream << v.g;}
+	gfstream << "  " << "rhs=";
+	if (v.rhs == INT_MAX) { gfstream << "∞"; }
+	else { gfstream << v.rhs;}
+	gfstream << "  " << "isinopen=" << v.isinopen << "  key1=";
+	if (v.key1==INT_MAX) { gfstream << "∞"; }
+	else { gfstream << v.key1; }
+	gfstream << "  key2=";
+	if (v.key2==INT_MAX) { gfstream << "∞"; }
+	else { gfstream << v.key2; }
 	if (v.next!=NULL){
-		cout << "  next=" << v.next->name << endl;
+		gfstream << "  next=" << v.next->name << endl;
 	}
 	else
 	{
-		cout << "  next=null" << endl;
+		gfstream << "  next=null" << endl;
 	}
 }
 void Graph::Showvertex(Vertex* pointer ) {
 	Vertex v = *pointer;
-	cout << "name=" << v.name << "  " << "g=";
-	if (v.g == INT_MAX) { cout << "∞"; }
-	else { cout << v.g; }
-	cout << "  " << "rhs=";
-	if (v.rhs == INT_MAX) { cout << "∞"; }
-	else { cout << v.rhs; }
-	cout << "  " << "isinopen=" << v.isinopen << "  key1=";
-	if (v.key1 == INT_MAX) { cout << "∞"; }
-	else { cout << v.key1; }
-	cout << "  key2=";
-	if (v.key2 == INT_MAX) { cout << "∞"; }
-	else { cout << v.key2; }
+	gfstream << "name=" << v.name << "  " << "g=";
+	if (v.g == INT_MAX) { gfstream << "∞"; }
+	else { gfstream << v.g; }
+	gfstream << "  " << "rhs=";
+	if (v.rhs == INT_MAX) { gfstream << "∞"; }
+	else { gfstream << v.rhs; }
+	gfstream << "  " << "isinopen=" << v.isinopen << "  key1=";
+	if (v.key1 == INT_MAX) { gfstream << "∞"; }
+	else { gfstream << v.key1; }
+	gfstream << "  key2=";
+	if (v.key2 == INT_MAX) { gfstream << "∞"; }
+	else { gfstream << v.key2; }
 	if (v.next != NULL) {
-		cout << "  next=" << v.next->name << endl;
+		gfstream << "  next=" << v.next->name << endl;
 	}
 	else
 	{
-		cout << "  next=null" << endl;
+		gfstream << "  next=null" << endl;
 	}
 }
 //针对带有无穷的非负数数的加法
@@ -583,14 +613,14 @@ int Graph::Add(int left, int right) {
 void Graph::Showopenlist() {
 	//输出openlist中的点信息
 	priority_queue<Vertex*, vector<Vertex*>, cmp> openlistcopy = openlist;
-	cout << "openlist:" << endl;
+	gfstream << "openlist:" << endl;
 	while (!openlistcopy.empty()) {
 		Showvertex(openlistcopy.top());
 		openlistcopy.pop();
 	}
 }
 void Graph::Showcloselist() {
-	cout << " closelist: ---------------------------------------------" << endl;
+	gfstream << " closelist: ---------------------------------------------" << endl;
 	for (auto beg=closelist.begin();beg!=closelist.end();beg++)
 	{
 		Showvertex(*beg);
@@ -634,8 +664,10 @@ void Graph::Dijkstra() {
 	clock_t time2 = clock();
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 	cout << "Dijkstra最短路径为:" <<start<< vertex[goal].Dpath <<"total:"<<vertex[goal].distance<< endl;
+    gfstream << "Dijkstra最短路径为:" << start << vertex[goal].Dpath << "total:" << vertex[goal].distance << endl;
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED |FOREGROUND_GREEN | FOREGROUND_BLUE);
 	cout << "耗时：" << time2 - time1 << " ms" << endl;
+	gfstream << "耗时：" << time2 - time1 << " ms" << endl;
 
 }
 //模拟接受广播
@@ -649,7 +681,7 @@ bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 		string filename = "C:\\Users\\chongliu\\Desktop\\华人运通\\轨迹规划\\VisualStudiocode\\vehiclechangecondition"
 			+to_string(currentfilename)+".txt";
 		ifstream infile;
-		cout <<"document name :"<< to_string(currentfilename)<<endl;
+		gfstream <<"document name :"<< to_string(currentfilename)<<endl;
 		infile.open(filename);
 		bool park; int vertex1, vertex2;
 		while (!infile.eof())
@@ -802,12 +834,15 @@ void Graph::Updateopenlist() {
 	//将tmp2的元素一个一个弹出-更新-加入open list或close list
 	while ( !tmp2.empty() )
 	{
+		
 		v = tmp2.front();
+		
 		tmp2.pop();
 		//因为open list现在为空需要跳过 if (ver.isinopen)因为已经从open list中除去了
 		v->isinopen = false;
 		UpdateVertex(v->name);
 	}
-	cout << "更新openlist finish：----------------------------------------------------" << endl;
-	Showopenlist();
+	gfstream << "更新openlist finish：----------------------------------------------------" << endl;
+	//Showopenlist();
 }
+

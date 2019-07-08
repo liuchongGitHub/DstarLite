@@ -4,6 +4,7 @@
 #include<vector>
 #include<queue>
 #include<set>
+#include <fstream>
 using namespace std;
 //每个顶点的数据结构
 struct Vertex
@@ -83,6 +84,7 @@ private:
 	int start;//起始点
 	int goal;//目标点
 	int openlistcountglessrhs;//open list中g《rhs的数量
+	fstream gfstream;//向文件中输入控制台信息
 	priority_queue<Vertex*, vector<Vertex*>, cmp> openlist;
 	//点更新序列
 	priority_queue<Vertex*, vector<Vertex*>, cmp2> updatelist;
