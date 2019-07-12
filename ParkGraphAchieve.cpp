@@ -5,28 +5,28 @@
 #include<string.h>
 #include"windows.h"
 using namespace std;
-//é¡¶ç‚¹æ•°å’Œè¾¹æ•°çš„å…³ç³»æ˜¯ï¼š((Vexnum*(Vexnum - 1)) / 2) < edge
+//¶¥µãÊıºÍ±ßÊıµÄ¹ØÏµÊÇ£º((Vexnum*(Vexnum - 1)) / 2) < edge
 bool check(int vexnum, int edgenum) {
 	if (vexnum <= 0 || edgenum <= 0 || ((vexnum*(vexnum - 1)) / 2) < edgenum)
 		return false;
 	return true;
 }
-//åˆ›å»ºGraph
+//´´½¨Graph
 void Graph::CreatGraph()
 {
-	//cout << "è¾“å…¥å…¨éƒ¨é¡¶ç‚¹çš„æ•°ç›®è¾¹çš„æ•°ç›®"<<endl;
+	//cout << "ÊäÈëÈ«²¿¶¥µãµÄÊıÄ¿±ßµÄÊıÄ¿"<<endl;
 	//cin >> vernum>>edgenum;
-	edgenum = 370;
-	vernum = 200;
+	//edgenum = 370;
+	vernum = 20000;
 	/*while (!check(vernum, edgenum)) {
-		cout << "è¾“å…¥çš„æ•°å€¼ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥" << endl;
+		cout << "ÊäÈëµÄÊıÖµ²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë" << endl;
 		cin >> vernum >> edgenum;
 	}*/
-	vertex = new Vertex[vernum];//åˆå§‹åŒ–vertex
-	//cout << "è¾“å…¥æ¯ä¸ªé¡¶ç‚¹çš„åæ ‡x&y"<<endl;
+	vertex = new Vertex[vernum];//³õÊ¼»¯vertex
+	//cout << "ÊäÈëÃ¿¸ö¶¥µãµÄ×ø±êx&y"<<endl;
 	for (int i = 0; i < vernum; i++) {
-		//cout << "é¡¶ç‚¹" << i << ":";
-		vertex[i].name = i;//ä¸ºæ¯ä¸ªé¡¶ç‚¹ç¼–å·
+		//cout << "¶¥µã" << i << ":";
+		vertex[i].name = i;//ÎªÃ¿¸ö¶¥µã±àºÅ
 		vertex[i].key1 = 0;
 		vertex[i].key2 = 0;
 		vertex[i].isinopen = false;
@@ -36,7 +36,7 @@ void Graph::CreatGraph()
 		(vertex)[i].x = row * 20;
 		(vertex)[i].y = column * 8;
 	}
-	weight =new int*[vernum];//åˆå§‹åŒ–åŸºæœ¬æƒå€¼çŸ©é˜µweight
+	weight = new int*[vernum];//³õÊ¼»¯»ù±¾È¨Öµ¾ØÕóweight
 	for (size_t i = 0; i < vernum; i++)
 	{
 		weight[i] = new int[vernum];
@@ -44,23 +44,23 @@ void Graph::CreatGraph()
 		{
 			weight[i][j] = INT_MAX;
 			if (i == j) { weight[i][j] = 0; }
-			if (i == j + 20 || j == i + 20) { weight[i][j] = 8;  }
+			if (i == j + 20 || j == i + 20) { weight[i][j] = 8; }
 			if (i == j + 1 || j == i + 1) { weight[i][j] = 20; }
 			if ((i % 20 == 19 && j % 20 == 0) || (j % 20 == 19 && i % 20 == 0)) {
 				weight[i][j] = INT_MAX;
 			}
 		}
 	}
-	//è¾“å‡ºéæ— ç©·è¾¹æƒ
+	//Êä³ö·ÇÎŞÇî±ßÈ¨
 	/*for (size_t i = 0; i < vernum; i++)
-	{	
+	{
 		for (size_t j = 0; j < vernum; j++)
 		{
 			if (weight[i][j]!=INT_MAX) { cout << i << "  to  " << j <<" = "<< weight[i][j] << endl;
 			}
 		}
 	}*/
-	totalweight = new int*[vernum];//åˆå§‹åŒ–æƒå€¼çŸ©é˜µæœ€ç»ˆtotalweight
+	totalweight = new int*[vernum];//³õÊ¼»¯È¨Öµ¾ØÕó×îÖÕtotalweight
 	for (size_t i = 0; i < vernum; i++)
 	{
 		totalweight[i] = new int[vernum];
@@ -69,25 +69,25 @@ void Graph::CreatGraph()
 			totalweight[i][j] = weight[i][j];
 		}
 	}
-	finish = new int*[vernum];//åˆå§‹åŒ–åŸºæœ¬æƒå€¼çŸ©é˜µfinish
+	finish = new int*[vernum];//³õÊ¼»¯»ù±¾È¨Öµ¾ØÕófinish
 	for (size_t i = 0; i < vernum; i++)
 	{
 		finish[i] = new int[vernum];
 		for (size_t j = 0; j < vernum; j++)
 		{
 			finish[i][j] = 0;
-			
+
 		}
 	}
-	
-	string filename = "C:\\Users\\chongliu\\Desktop\\åäººè¿é€š\\è½¨è¿¹è§„åˆ’\\VisualStudiocode\\message.txt";
+
+	string filename = "C:\\Users\\chongliu\\Desktop\\»ªÈËÔËÍ¨\\¹ì¼£¹æ»®\\VisualStudiocode\\message.txt";
 	gfstream.open(filename, ios::out);
 	if (gfstream.bad())
 	{
-		cout << "æ‰“å¼€æ–‡ä»¶å‡ºé”™" << endl;
+		cout << "´ò¿ªÎÄ¼ş³ö´í" << endl;
 		return;
 	}
-	/*cout << "è¾“å‡ºæ¯æ¡è¾¹çš„åŸºç¡€æƒå€¼ï¼ˆé¡¶ç‚¹ä»0åˆ°" << vernum-1 << "ï¼‰ ä¾‹0 1 10 "<<endl;
+	/*cout << "Êä³öÃ¿Ìõ±ßµÄ»ù´¡È¨Öµ£¨¶¥µã´Ó0µ½" << vernum-1 << "£© Àı0 1 10 "<<endl;
 	for (size_t i = 0; i < edgenum; i++)
 	{
 		int oneside; int otherside; int value;
@@ -98,9 +98,9 @@ void Graph::CreatGraph()
 	}*/
 }
 
-//æ„é€ å‡½æ•°
-Graph::Graph(){ }
-//ææ„å‡½æ•°
+//¹¹Ôìº¯Êı
+Graph::Graph() { }
+//Îö¹¹º¯Êı
 Graph::~Graph()
 {
 	for (size_t i = 0; i < vernum; i++)
@@ -120,12 +120,12 @@ Graph::~Graph()
 	delete finish;
 	gfstream.close();
 }
-//è®¡ç®—startä¸targetçš„æ›¼å“ˆé¡¿è·ç¦»å³h
+//¼ÆËãstartÓëtargetµÄÂü¹ş¶Ù¾àÀë¼´h
 int Graph::Manhattan(int start, int target)
 {
 	return abs(vertex[target].x - vertex[start].x) + abs(vertex[target].y - vertex[start].y);
 }
-void Graph::Init(int goal) 
+void Graph::Init(int goal)
 {
 	for (size_t i = 0; i < vernum; i++)
 	{
@@ -133,7 +133,7 @@ void Graph::Init(int goal)
 		vertex[i].rhs = INT_MAX;
 		vertex[i].next = NULL;
 		vertex[i].isinopen = false;
-	
+
 	}
 	openlistcountglessrhs = 0;
 	vertex[goal].rhs = 0;
@@ -141,41 +141,41 @@ void Graph::Init(int goal)
 	Vertex *v = &(vertex[goal]);
 	openlist.push(v);
 	vertex[goal].isinopen = true;
-	//è¾“å‡ºç¬¬ä¸€ä¸ªopenlistä¸­çš„ç‚¹ä¿¡æ¯
+	//Êä³öµÚÒ»¸öopenlistÖĞµÄµãĞÅÏ¢
 	Showvertex(openlist.top());
 
 }
-//è¿”å›nameç‚¹çš„é‚»å±…èŠ‚ç‚¹
+//·µ»ØnameµãµÄÁÚ¾Ó½Úµã
 vector<int> Graph::GetNeighbor(int name) {
 	vector<int> neighbor;
-	for (int i = 0; i < vernum;i++) {
+	for (int i = 0; i < vernum; i++) {
 		if (i == name) { continue; }
 		if (weight[name][i] != INT_MAX) { neighbor.push_back(i); }
-    }
+	}
 	return neighbor;
 }
-//è®¾ç½®èµ·å§‹ç‚¹å’Œç›®æ ‡ç‚¹
+//ÉèÖÃÆğÊ¼µãºÍÄ¿±êµã
 void Graph::Setstartandend(int start, int goal) {
-	this->start = start; this->goal = goal; 
-	//cout << "èµ·ç‚¹&ç»ˆç‚¹è®¾ç½®å®Œæˆ"<<endl;
+	this->start = start; this->goal = goal;
+	//cout << "Æğµã&ÖÕµãÉèÖÃÍê³É"<<endl;
 }
-bool Graph::IsNeighbor(int name1,int name2) {
+bool Graph::IsNeighbor(int name1, int name2) {
 	vector<int> v = GetNeighbor(start);
 	for (auto beg = v.begin(), end = v.end(); beg != end; beg++) {
 		if (*beg == name1 || *beg == name2) { return true; }
 	}
 	return false;
 }
-//è¯·æ±‚è½¦è¾†çš„çŠ¶æ€æ›´æ–°total weightçŸ©é˜µ
+//ÇëÇó³µÁ¾µÄ×´Ì¬¸üĞÂtotal weight¾ØÕó
 bool Graph::Requirevehicle() {
-	std::cout << "æ˜¯å¦ç»§ç»­æ›´æ–°è½¦è¾†çŠ¶å†µY/N" << endl;
+	std::cout << "ÊÇ·ñ¼ÌĞø¸üĞÂ³µÁ¾×´¿öY/N" << endl;
 	char YN;
 	cin >> YN;
 	if (YN == 'N')
 	{
 		return false;
 	}
-	//åˆå§‹åŒ–æœ€ç»ˆæƒå€¼çŸ©é˜µ
+	//³õÊ¼»¯×îÖÕÈ¨Öµ¾ØÕó
 	for (size_t i = 0; i < vernum; i++)
 	{
 		for (size_t j = 0; j < vernum; j++)
@@ -183,47 +183,52 @@ bool Graph::Requirevehicle() {
 			totalweight[i][j] = weight[i][j];
 		}
 	}
-	
-	while(YN=='Y'){
-		cout << "è¾“å…¥è½¦è¾†çš„çŠ¶æ€0è¡Œé©¶1æ³Šè½¦ ä»¥åŠæ‰€åœ¨çš„è¾¹çš„ä¸¤ä¸ªç«¯ç‚¹" << endl;
+
+	while (YN == 'Y') {
+		cout << "ÊäÈë³µÁ¾µÄ×´Ì¬0ĞĞÊ»1²´³µ ÒÔ¼°ËùÔÚµÄ±ßµÄÁ½¸ö¶Ëµã" << endl;
 		bool park; int vertex1, vertex2;
 		cin >> park >> vertex1 >> vertex2;
-		//ä¸startç›¸é‚»
+		//ÓëstartÏàÁÚ
 		if (IsNeighbor(vertex1, vertex2)) {
-			if (park == 1) { totalweight[vertex1][vertex2] = Add(10, totalweight[vertex1][vertex2]); 
-			                totalweight[vertex2][vertex1] = Add(10, totalweight[vertex2][vertex1]);}
-			else { totalweight[vertex1][vertex2] = Add(5, totalweight[vertex1][vertex2]); 
-			totalweight[vertex2][vertex1] = Add(5, totalweight[vertex2][vertex1]);
+			if (park == 1) {
+				totalweight[vertex1][vertex2] = Add(10, totalweight[vertex1][vertex2]);
+				totalweight[vertex2][vertex1] = Add(10, totalweight[vertex2][vertex1]);
+			}
+			else {
+				totalweight[vertex1][vertex2] = Add(5, totalweight[vertex1][vertex2]);
+				totalweight[vertex2][vertex1] = Add(5, totalweight[vertex2][vertex1]);
 			}
 		}
-		//ä¸startä¸ç›¸é‚»
+		//Óëstart²»ÏàÁÚ
 		else {
-			if (park == 1) { totalweight[vertex1][vertex2] = Add(7, totalweight[vertex1][vertex2]);
-			totalweight[vertex2][vertex1] = Add(7, totalweight[vertex2][vertex1]);
+			if (park == 1) {
+				totalweight[vertex1][vertex2] = Add(7, totalweight[vertex1][vertex2]);
+				totalweight[vertex2][vertex1] = Add(7, totalweight[vertex2][vertex1]);
 			}
-			else { totalweight[vertex1][vertex2] = Add(3, totalweight[vertex1][vertex2]);
-			totalweight[vertex2][vertex1] = Add(3, totalweight[vertex2][vertex1]);
+			else {
+				totalweight[vertex1][vertex2] = Add(3, totalweight[vertex1][vertex2]);
+				totalweight[vertex2][vertex1] = Add(3, totalweight[vertex2][vertex1]);
 			}
 		}
-		cout << "æ˜¯å¦ç»§ç»­æ›´æ–°è½¦è¾†çŠ¶å†µY/N" << endl;
+		cout << "ÊÇ·ñ¼ÌĞø¸üĞÂ³µÁ¾×´¿öY/N" << endl;
 		cin >> YN;
-	} 
+	}
 	return true;
 }
-//è®¡ç®—nameç‚¹çš„keyå€¼
+//¼ÆËãnameµãµÄkeyÖµ
 void Graph::Caculatekey(int name) {
 	Vertex& v = vertex[name];
-	 v.key2 = v.g > v.rhs ? v.rhs : v.g;
-	 //if (v.g > v.rhs) { v.g = v.rhs; }
-	 v.key1 = Add(v.key2 , Manhattan(start, name));
+	v.key2 = v.g > v.rhs ? v.rhs : v.g;
+	//if (v.g > v.rhs) { v.g = v.rhs; }
+	v.key1 = Add(v.key2, Manhattan(start, name));
 }
-//æ›´æ–°èŠ‚ç‚¹
-//å¦‚æœç‚¹åœ¨openlistä¸­åˆ™é™¤å»
-//å°†rhsï¼=gçš„ç‚¹åŠ å…¥openlist
-//åªæœ‰updatevertexèƒ½å°†ç‚¹åŠ å…¥openlist
+//¸üĞÂ½Úµã
+//Èç¹ûµãÔÚopenlistÖĞÔò³ıÈ¥
+//½«rhs£¡=gµÄµã¼ÓÈëopenlist
+//Ö»ÓĞupdatevertexÄÜ½«µã¼ÓÈëopenlist
 void Graph::UpdateVertex(int name) {
 	Vertex& ver = vertex[name];
-	//è®°å½•æºæ•°æ®
+	//¼ÇÂ¼Ô´Êı¾İ
 	Vertex oldver;
 	oldver.g = ver.g;
 	oldver.h = ver.h;
@@ -236,13 +241,13 @@ void Graph::UpdateVertex(int name) {
 	if (name != goal) {
 
 		vector<int> neighbor = GetNeighbor(name);
-		//rhs= min(gâ€™(s)+c(s,sâ€™))
-	   
-		ver.rhs=INT_MAX;
+		//rhs= min(g¡¯(s)+c(s,s¡¯))
+
+		ver.rhs = INT_MAX;
 		Vertex* point = ver.next;
 		for (auto beg = neighbor.begin(); beg != neighbor.end(); beg++) {
-			
-			if (vertex[*beg].next!=&vertex[name])//é˜²æ­¢ç‚¹ä»åç»§ä¸­é€‰next
+
+			if (vertex[*beg].next != &vertex[name])//·ÀÖ¹µã´Óºó¼ÌÖĞÑ¡next
 			{
 				int tem = Add(vertex[*beg].g, totalweight[*beg][name]);
 				if (ver.rhs >= tem)
@@ -252,134 +257,135 @@ void Graph::UpdateVertex(int name) {
 
 				}
 			}
-			 
-			
+
+
 		}
 		Caculatekey(name);
-		//å¦‚æœç‚¹å‘ç”Ÿæ”¹å˜åˆ™æ˜¾ç¤ºå‡ºæ¥
-		
-		if (oldver.g!= ver.g || oldver.rhs != ver.rhs || oldver.next!=ver.next ) {
+		//Èç¹ûµã·¢Éú¸Ä±äÔòÏÔÊ¾³öÀ´
+
+		if (oldver.g != ver.g || oldver.rhs != ver.rhs || oldver.next != ver.next) {
 			Vertex* s = &oldver;
-			gfstream << "*****************************"<<endl;
+			gfstream << "*****************************" << endl;
 			Showvertex(s);
-			gfstream << "æ”¹å˜ä¸ºï¼š " << endl;
+			gfstream << "¸Ä±äÎª£º " << endl;
 			Showvertex(ver.name);
-			gfstream << "*****************************"<<endl;
+			gfstream << "*****************************" << endl;
 			gfstream << "\n";
 		}
 		/*
 		if (point!=NULL && point->name!= ver.next->name) {
-			cout << name << "ç‚¹åŸnext=" << point->name << " ç°next=" << ver.next->name << "    " << name
+			cout << name << "µãÔ­next=" << point->name << " ÏÖnext=" << ver.next->name << "    " << name
 				<< ".rhs=" << vertex[name].rhs << " next.g=" << vertex[name].next->g << endl;
 		}*/
 	}
-	//å¦‚æœç‚¹åœ¨openlistä¸­åˆ™é™¤å»
+	//Èç¹ûµãÔÚopenlistÖĞÔò³ıÈ¥
 	if (ver.isinopen)
 	{
 		vector<Vertex*> vec;
-		Vertex* v=openlist.top();
-		//å°†å‰é¢çš„éƒ½è°ƒå‡ºæ¥
-		while(v!=&(vertex[name]) )
+		Vertex* v = openlist.top();
+		//½«Ç°ÃæµÄ¶¼µ÷³öÀ´
+		while (v != &(vertex[name]))
 		{
 			vec.push_back(v);
 			openlist.pop();
 			if (v->g < v->rhs) { openlistcountglessrhs--; }
 			v = openlist.top();
 		}
-		//åˆ å»ç›®æ ‡
+		//É¾È¥Ä¿±ê
 		v->isinopen = false;
 		openlist.pop();
 		if (v->g < v->rhs) { openlistcountglessrhs--; }
-		//å°†åŸå…ˆè°ƒå‡ºæ¥çš„éƒ½å†æ’è¿›å»
+		//½«Ô­ÏÈµ÷³öÀ´µÄ¶¼ÔÙ²å½øÈ¥
 		for (auto beg = vec.begin(); beg != vec.end(); beg++)
 		{
 			openlist.push(*beg);
 			if ((*beg)->g < (*beg)->rhs) { openlistcountglessrhs++; }
 		}
 	}
-	//å°†rhsï¼=gçš„ç‚¹åŠ å…¥openlistä»closeliståˆ é™¤
+	//½«rhs£¡=gµÄµã¼ÓÈëopenlist´ÓcloselistÉ¾³ı
 	if (ver.g != ver.rhs)
-	{ 
-		Vertex* s = &vertex[name]; 
+	{
+		Vertex* s = &vertex[name];
 		//Caculatekey(name);
 		openlist.push(s);
 		if (s->g < s->rhs) { openlistcountglessrhs++; }
 		s->isinopen = true;
-		gfstream <<name<< " ç‚¹åŠ å…¥openlist"<<endl;
+		gfstream << name << " µã¼ÓÈëopenlist" << endl;
 		//Showvertex(name);
 
 		auto ifincloselist = closelist.find(s);
-		if (ifincloselist!=closelist.end())
+		if (ifincloselist != closelist.end())
 		{
 			closelist.erase(ifincloselist);
 			gfstream << "delete closelist point:" << s->name << endl;
 		}
 	}
 	else {
-		if (ver.g!=INT_MAX) {
-		Vertex* s = &vertex[name];
-		closelist.insert(s);
+		if (ver.g != INT_MAX) {
+			Vertex* s = &vertex[name];
+			closelist.insert(s);
 		}
 	}
 	//cout << "updatevertex done";
 }
-//è®¡ç®—æœ€çŸ­è·¯å¾„
+//¼ÆËã×î¶ÌÂ·¾¶
 void Graph::Computepath() {
-	gfstream << "è®¡ç®—ä»" << start << "åˆ°" << goal << "çš„æœ€çŸ­è·¯å¾„" << endl;
+	gfstream << "¼ÆËã´Ó" << start << "µ½" << goal << "µÄ×î¶ÌÂ·¾¶" << endl;
 	//Showopenlist();
 	clock_t time1 = clock();
-	while (Compare_key(openlist.top()->name,start) || vertex[start].g!=vertex[start].rhs 
-		|| openlistcountglessrhs!=0)
+	while (Compare_key(openlist.top()->name, start) || vertex[start].g != vertex[start].rhs
+		|| openlistcountglessrhs != 0)
 	{
-		
-		gfstream << "compute path openlist------------------------------------------"<<endl;
+
+		gfstream << "compute path openlist------------------------------------------" << endl;
+		//µ¯³ö¶ÓÍ·
 		Vertex* s = openlist.top();
 		openlist.pop();
 		if (s->g < s->rhs)openlistcountglessrhs--;
 		s->isinopen = false;
-		if ((s->g) > (s->rhs) )
+		if ((s->g) > (s->rhs))
 		{
-			
+
 			s->g = s->rhs;
 			Caculatekey(s->name);
 			closelist.insert(s);
-			vector<int> neighbor=GetNeighbor(s->name);
-			for (auto beg=neighbor.begin(),end=neighbor.end();beg!=end;beg++)
+			vector<int> neighbor = GetNeighbor(s->name);
+			for (auto beg = neighbor.begin(), end = neighbor.end(); beg != end; beg++)
 			{
 				UpdateVertex(*beg);
 			}
-		
-		}		
+
+		}
 		else
 		{
-			
+
 			s->g = INT_MAX;
 			closelist.erase(s);
-			gfstream << " delete point "<<s->name <<endl;
+			gfstream << " delete point " << s->name << endl;
 			UpdateVertex(s->name);
 			vector<int> neighbor = GetNeighbor(s->name);
 			for (auto beg = neighbor.begin(), end = neighbor.end(); beg != end; beg++)
 			{
 				UpdateVertex(*beg);
 			}
-			
+
 		}
 		if (openlist.empty()) { cout << "openlist empty" << endl; }
-		//è¾“å‡ºopenlistä¸­çš„ç‚¹ä¿¡æ¯
-		//cout << "å®Œæˆä¸€æ¬¡compute--------------------------------------------"<<endl;
-		//cout << "å®Œæˆä¸€æ¬¡compute--------------------------------------------"<<endl;
-		Showopenlist();
-		Showcloselist();
+		//Êä³öopenlistÖĞµÄµãĞÅÏ¢
+		//cout << "Íê³ÉÒ»´Îcompute--------------------------------------------"<<endl;
+		//cout << "Íê³ÉÒ»´Îcompute--------------------------------------------"<<endl;
+		//Showopenlist();
+		//Showcloselist();
 		if (openlist.empty())break;
 	}//while (Compare_key(openlist.top()->name,start) || vertex[start].g!=vertex[start].rhs)
 	//gfstream << "compute while finish" << endl;
-	//æŸ¥çœ‹æ‰€æœ‰nextä¸ä¸ºnullçš„ç‚¹çš„nextæŒ‡å‘
-	//cout << "æŸ¥çœ‹æ‰€æœ‰nextä¸ä¸ºnullçš„ç‚¹çš„nextæŒ‡å‘--------------------------------------------" << endl;
+	//²é¿´ËùÓĞnext²»ÎªnullµÄµãµÄnextÖ¸Ïò
+	//cout << "²é¿´ËùÓĞnext²»ÎªnullµÄµãµÄnextÖ¸Ïò--------------------------------------------" << endl;
 	/*for (size_t i = 0; i < vernum; i++)
 	{
 		if (vertex[i].next!=NULL) { cout <<"["<< i << "].next->" << vertex[i].next->name << endl; }
 	}*/
-	//å°†æœ€çŸ­è·¯å¾„å­˜å…¥pathä¸­
+	//½«×î¶ÌÂ·¾¶´æÈëpathÖĞ
 	Vertex* vstart = &vertex[start];
 	while (!path.empty())
 	{
@@ -391,14 +397,14 @@ void Graph::Computepath() {
 		vstart = vstart->next;
 	}
 	clock_t time2 = clock();
-	//æ‰“å°è¾“å‡ºæœ€çŸ­è·¯å¾„
-	
+	//´òÓ¡Êä³ö×î¶ÌÂ·¾¶
+
 	if (!path.empty()) {
 		Vertex *vpath = &path.front();
-
+		cout << "-------------------------------------------------------------------" << endl;
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
-		cout << "æœ€çŸ­è·¯å¾„ï¼š         ";
-		gfstream << "æœ€çŸ­è·¯å¾„ï¼š         ";
+		cout << "×î¶ÌÂ·¾¶£º         ";
+		gfstream << "×î¶ÌÂ·¾¶£º         ";
 		int distance = 0;
 
 		while (vpath != NULL)
@@ -424,65 +430,66 @@ void Graph::Computepath() {
 		gfstream << "total:" << distance;
 		gfstream << endl;
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-		cout << "è€—æ—¶ï¼š" << time2 - time1 << " ms" << endl;
-		gfstream << "è€—æ—¶ï¼š" << time2 - time1 << " ms" << endl;
+		cout << "ºÄÊ±£º" << time2 - time1 << " ms" << endl;
+		gfstream << "ºÄÊ±£º" << time2 - time1 << " ms" << endl;
 	}
 	Dijkstra();
+	cout << "-------------------------------------------------------------------" << endl;
 }
 //name1.key<name2.key?
 bool Graph::Compare_key(int name1, int name2) {
 	Caculatekey(name1);
 	Caculatekey(name2);
 	if (vertex[name1].key1 < vertex[name2].key1) { return true; }
-	if (vertex[name1].key1==vertex[name2].key1)
+	if (vertex[name1].key1 == vertex[name2].key1)
 	{
 		return vertex[name1].key2 < vertex[name2].key2;
 	}
 	return false;
 }
 
-//D*Liteä¸»è¦ç®—æ³•
+//D*LiteÖ÷ÒªËã·¨
 void Graph::Mainmethod() {
-	cout << "è¾“å…¥èµ·ç‚¹å’Œç»ˆç‚¹ï¼š";
+	cout << "ÊäÈëÆğµãºÍÖÕµã£º";
 	cin >> start >> goal;
 	cout << endl;
 	Setstartandend(start, goal);
-	//åˆå§‹åŒ–h
+	//³õÊ¼»¯h
 	for (size_t i = 0; i < vernum; i++)
 	{
 		vertex[i].h = Manhattan(start, i);
 	}
-	//åˆå§‹åŒ–ç®—æ³•
+	//³õÊ¼»¯Ëã·¨
 	Init(goal);
 	cout << "inti done" << endl;
 	Computepath();
 	float speed;
-	cout << "è¾“å…¥è½¦é€Ÿ"<<endl;
+	cout << "ÊäÈë³µËÙ" << endl;
 	cin >> speed;
 	int lastfilename = 10;
-	while (start!=goal)//å½“è½¦è¾†æ²¡æœ‰èµ°å®Œå…¨ç¨‹æ—¶
+	while (start != goal)//µ±³µÁ¾Ã»ÓĞ×ßÍêÈ«³ÌÊ±
 	{
 		float time = 0;
-		while (time<7.5 && start != goal)
+		while (time < 7.5 && start != goal)
 		{
 			path.pop();
-			
+
 			Vertex next = path.front();
-			
-			time =time+ totalweight[start][next.name] / speed;
+
+			time = time + totalweight[start][next.name] / speed;
 			finish[start][next.name]++;
 			finish[next.name][start]++;
-			if (finish[start][next.name]>=3)//å¦‚æœè·¯å¾„åå¤èµ°è¿‡3éåˆ™ä¸èƒ½å†èµ°
+			if (finish[start][next.name] >= 3)//Èç¹ûÂ·¾¶·´¸´×ß¹ı3±éÔò²»ÄÜÔÙ×ß
 			{
 				weight[start][next.name] = INT_MAX;
 				weight[next.name][start] = INT_MAX;
 
 			}
-			gfstream << " ç‚¹ "<<start<<"ç‚¹èµ°è¿‡"<<endl;
-			Setstartandend( next.name,goal);
-			gfstream <<" ç‚¹ "<< start <<" è®¾ä¸ºæ–°èµ·å§‹ç‚¹" <<endl;
+			gfstream << " µã " << start << "µã×ß¹ı" << endl;
+			Setstartandend(next.name, goal);
+			gfstream << " µã " << start << " ÉèÎªĞÂÆğÊ¼µã" << endl;
 		}//while (time<7.5 && start != goal)
-		//è®°å½•åŸå…ˆçš„æƒå€¼
+		//¼ÇÂ¼Ô­ÏÈµÄÈ¨Öµ
 		int** oldweight;
 		oldweight = new int*[vernum];
 		for (size_t i = 0; i < vernum; i++)
@@ -493,21 +500,23 @@ void Graph::Mainmethod() {
 				oldweight[i][j] = totalweight[i][j];
 			}
 		}
-		//ä»åœè½¦åœºæ¥å—è·¯é¢å˜åŒ–
-		bool ifchange= RequirevehicleFromWindowsFile(lastfilename);
-		if (ifchange){
-			gfstream << " è·¯å¾„æƒå‘ç”Ÿå˜åŒ–" << endl;
-			//å¯¹å˜åŒ–æƒè¾¹çš„ä¸¤ä¸ªç«¯ç‚¹åŠå…¶é‚»å±…åŠ å…¥update list
+		//´ÓÍ£³µ³¡½ÓÊÜÂ·Ãæ±ä»¯
+		bool ifchange = RequirevehicleFromWindowsFile(lastfilename);
+		if (ifchange) {
+			int different = 0;
+			gfstream << " Â·¾¶È¨·¢Éú±ä»¯" << endl;
+			//¶Ô±ä»¯È¨±ßµÄÁ½¸ö¶Ëµã¼°ÆäÁÚ¾Ó¼ÓÈëupdate list
 			for (size_t i = 0; i < vernum; i++)
 			{
 				for (size_t j = 0; j < vernum; j++)
 				{
-					if (oldweight[i][j]!=totalweight[i][j])
+					if (oldweight[i][j] != totalweight[i][j])
 					{
+						different++;
 						Vertex* s1 = &vertex[i];
 						updatelist.push(s1);
 						//UpdateVertex(i);
-						vector<int> v1 = GetNeighbor(i);
+						//vector<int> v1 = GetNeighbor(i);
 						/*for (auto beg=v1.begin(); beg!=v1.end(); beg++)
 						{
 							Vertex* s2 = &vertex[*beg];
@@ -517,80 +526,59 @@ void Graph::Mainmethod() {
 						Vertex* s3 = &vertex[j];
 						updatelist.push(s3);
 						//UpdateVertex(j);
-						vector<int> v2= GetNeighbor(j);
+						//vector<int> v2 = GetNeighbor(j);
 						/*for (auto beg = v2.begin(); beg != v2.end(); beg++)
 						{
 							Vertex* s4 = &vertex[*beg];
 							updatelist.push(s4);
 							//UpdateVertex(*beg);
-						}*/					
+						}*/
 					}
 				}
 			}
-			//æ›´æ–°updatelistçš„å…ƒç´ 
+			cout << " different has " << different << endl;
+			//¸üĞÂupdatelistµÄÔªËØ
 			while (!updatelist.empty())
 			{
 				Vertex* s = updatelist.top();
 				updatelist.pop();
 				UpdateVertex(s->name);
 			}
-			gfstream << " å˜æƒç«¯ç‚¹æ›´æ–°ç‚¹å®Œæˆ"<<endl;
-			//é‡Šæ”¾oldweight
+			gfstream << " ±äÈ¨¶Ëµã¸üĞÂµãÍê³É" << endl;
+			//ÊÍ·Åoldweight
 			for (size_t i = 0; i < vernum; i++)
 			{
 				delete oldweight[i];
-			
+
 			}
 			delete oldweight;
-			//æ›´æ–° openlist
+			//¸üĞÂ openlist
 			Updateopenlist();
-			//æ›´æ–°closelist
-			for (auto beg=closelist.begin();beg!=closelist.end();beg++)
+			//¸üĞÂcloselist
+			for (auto beg = closelist.begin(); beg != closelist.end(); beg++)
 			{
 				UpdateVertex((*beg)->name);
 			}
 			//Showcloselist();
-			gfstream << "é‡æ–°è®¡ç®—è·¯å¾„" << endl;
+			gfstream << "ÖØĞÂ¼ÆËãÂ·¾¶" << endl;
 			Computepath();
 		}//if (ifchange)
 	}//while (start!=goal)
 }
-//å±•ç¤ºç‚¹çš„ä¿¡æ¯
+//Õ¹Ê¾µãµÄĞÅÏ¢
 void Graph::Showvertex(int name) {
-	Vertex v=vertex[name];
+	Vertex v = vertex[name];
 	gfstream << "name=" << v.name << "  " << "g=";
-	if (v.g == INT_MAX) { gfstream << "âˆ"; }
-	else{ gfstream << v.g;}
-	gfstream << "  " << "rhs=";
-	if (v.rhs == INT_MAX) { gfstream << "âˆ"; }
-	else { gfstream << v.rhs;}
-	gfstream << "  " << "isinopen=" << v.isinopen << "  key1=";
-	if (v.key1==INT_MAX) { gfstream << "âˆ"; }
-	else { gfstream << v.key1; }
-	gfstream << "  key2=";
-	if (v.key2==INT_MAX) { gfstream << "âˆ"; }
-	else { gfstream << v.key2; }
-	if (v.next!=NULL){
-		gfstream << "  next=" << v.next->name << endl;
-	}
-	else
-	{
-		gfstream << "  next=null" << endl;
-	}
-}
-void Graph::Showvertex(Vertex* pointer ) {
-	Vertex v = *pointer;
-	gfstream << "name=" << v.name << "  " << "g=";
-	if (v.g == INT_MAX) { gfstream << "âˆ"; }
+	if (v.g == INT_MAX) { gfstream << "¡Ş"; }
 	else { gfstream << v.g; }
 	gfstream << "  " << "rhs=";
-	if (v.rhs == INT_MAX) { gfstream << "âˆ"; }
+	if (v.rhs == INT_MAX) { gfstream << "¡Ş"; }
 	else { gfstream << v.rhs; }
 	gfstream << "  " << "isinopen=" << v.isinopen << "  key1=";
-	if (v.key1 == INT_MAX) { gfstream << "âˆ"; }
+	if (v.key1 == INT_MAX) { gfstream << "¡Ş"; }
 	else { gfstream << v.key1; }
 	gfstream << "  key2=";
-	if (v.key2 == INT_MAX) { gfstream << "âˆ"; }
+	if (v.key2 == INT_MAX) { gfstream << "¡Ş"; }
 	else { gfstream << v.key2; }
 	if (v.next != NULL) {
 		gfstream << "  next=" << v.next->name << endl;
@@ -600,9 +588,31 @@ void Graph::Showvertex(Vertex* pointer ) {
 		gfstream << "  next=null" << endl;
 	}
 }
-//é’ˆå¯¹å¸¦æœ‰æ— ç©·çš„éè´Ÿæ•°æ•°çš„åŠ æ³•
+void Graph::Showvertex(Vertex* pointer) {
+	Vertex v = *pointer;
+	gfstream << "name=" << v.name << "  " << "g=";
+	if (v.g == INT_MAX) { gfstream << "¡Ş"; }
+	else { gfstream << v.g; }
+	gfstream << "  " << "rhs=";
+	if (v.rhs == INT_MAX) { gfstream << "¡Ş"; }
+	else { gfstream << v.rhs; }
+	gfstream << "  " << "isinopen=" << v.isinopen << "  key1=";
+	if (v.key1 == INT_MAX) { gfstream << "¡Ş"; }
+	else { gfstream << v.key1; }
+	gfstream << "  key2=";
+	if (v.key2 == INT_MAX) { gfstream << "¡Ş"; }
+	else { gfstream << v.key2; }
+	if (v.next != NULL) {
+		gfstream << "  next=" << v.next->name << endl;
+	}
+	else
+	{
+		gfstream << "  next=null" << endl;
+	}
+}
+//Õë¶Ô´øÓĞÎŞÇîµÄ·Ç¸ºÊıÊıµÄ¼Ó·¨
 int Graph::Add(int left, int right) {
-	if (left==INT_MAX || right==INT_MAX)
+	if (left == INT_MAX || right == INT_MAX)
 	{
 		return INT_MAX;
 	}
@@ -611,7 +621,7 @@ int Graph::Add(int left, int right) {
 	}
 }
 void Graph::Showopenlist() {
-	//è¾“å‡ºopenlistä¸­çš„ç‚¹ä¿¡æ¯
+	//Êä³öopenlistÖĞµÄµãĞÅÏ¢
 	priority_queue<Vertex*, vector<Vertex*>, cmp> openlistcopy = openlist;
 	gfstream << "openlist:" << endl;
 	while (!openlistcopy.empty()) {
@@ -621,29 +631,29 @@ void Graph::Showopenlist() {
 }
 void Graph::Showcloselist() {
 	gfstream << " closelist: ---------------------------------------------" << endl;
-	for (auto beg=closelist.begin();beg!=closelist.end();beg++)
+	for (auto beg = closelist.begin(); beg != closelist.end(); beg++)
 	{
 		Showvertex(*beg);
 	}
 }
-//Dijkstraç®—æ³•æ±‚å‡ºæœ€çŸ­è·¯å¾„
+//DijkstraËã·¨Çó³ö×î¶ÌÂ·¾¶
 void Graph::Dijkstra() {
-	//åˆå§‹åŒ–
+	//³õÊ¼»¯
 	for (size_t i = 0; i < vernum; i++)
 	{
 		vertex[i].distance = totalweight[start][i];
 		vertex[i].visit = false;
 		vertex[i].Dpath = "";
 	}
-	
+
 	vertex[start].distance = 0;
 	int count = 1;
 	clock_t time1 = clock();
-	while (count!=vernum)
+	while (count != vernum)
 	{
 		int temp = 0;
 		int min = INT_MAX;
-		for (int i = 0; i < vernum; i++) {//æ‰¾åˆ°ä¸€ä¸ªæœ€å°å€¼ç‚¹
+		for (int i = 0; i < vernum; i++) {//ÕÒµ½Ò»¸ö×îĞ¡Öµµã
 			if (!vertex[i].visit && vertex[i].distance < min) {
 				min = vertex[i].distance;
 				temp = i;
@@ -652,42 +662,42 @@ void Graph::Dijkstra() {
 		vertex[temp].visit = true;
 		++count;
 		for (int i = 0; i < vernum; i++) {
-			//æ³¨æ„è¿™é‡Œçš„æ¡ä»¶arc[temp][i]!=INT_MAXå¿…é¡»åŠ ï¼Œä¸ç„¶ä¼šå‡ºç°æº¢å‡ºï¼Œä»è€Œé€ æˆç¨‹åºå¼‚å¸¸
-			if (!vertex[i].visit && totalweight[temp][i] != INT_MAX && ( Add(vertex[temp].distance ,totalweight[temp][i])) <= vertex[i].distance) {
-				//å¦‚æœæ–°å¾—åˆ°çš„è¾¹å¯ä»¥å½±å“å…¶ä»–ä¸ºè®¿é—®çš„é¡¶ç‚¹ï¼Œé‚£å°±å°±æ›´æ–°å®ƒçš„æœ€çŸ­è·¯å¾„å’Œé•¿åº¦
+			//×¢ÒâÕâÀïµÄÌõ¼şarc[temp][i]!=INT_MAX±ØĞë¼Ó£¬²»È»»á³öÏÖÒç³ö£¬´Ó¶øÔì³É³ÌĞòÒì³£
+			if (!vertex[i].visit && totalweight[temp][i] != INT_MAX && (Add(vertex[temp].distance, totalweight[temp][i])) <= vertex[i].distance) {
+				//Èç¹ûĞÂµÃµ½µÄ±ß¿ÉÒÔÓ°ÏìÆäËûÎª·ÃÎÊµÄ¶¥µã£¬ÄÇ¾Í¾Í¸üĞÂËüµÄ×î¶ÌÂ·¾¶ºÍ³¤¶È
 				vertex[i].distance = vertex[temp].distance + totalweight[temp][i];
 				vertex[i].Dpath = vertex[temp].Dpath + "->" + to_string(i);
 			}
 		}
-		
+
 	}//while (count!=vernum)
 	clock_t time2 = clock();
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
-	cout << "Dijkstraæœ€çŸ­è·¯å¾„ä¸º:" <<start<< vertex[goal].Dpath <<"total:"<<vertex[goal].distance<< endl;
-    gfstream << "Dijkstraæœ€çŸ­è·¯å¾„ä¸º:" << start << vertex[goal].Dpath << "total:" << vertex[goal].distance << endl;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED |FOREGROUND_GREEN | FOREGROUND_BLUE);
-	cout << "è€—æ—¶ï¼š" << time2 - time1 << " ms" << endl;
-	gfstream << "è€—æ—¶ï¼š" << time2 - time1 << " ms" << endl;
+	cout << "Dijkstra×î¶ÌÂ·¾¶Îª:" << start << vertex[goal].Dpath << "total:" << vertex[goal].distance << endl;
+	gfstream << "Dijkstra×î¶ÌÂ·¾¶Îª:" << start << vertex[goal].Dpath << "total:" << vertex[goal].distance << endl;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	cout << "ºÄÊ±£º" << time2 - time1 << " ms" << endl;
+	gfstream << "ºÄÊ±£º" << time2 - time1 << " ms" << endl;
 
 }
-//æ¨¡æ‹Ÿæ¥å—å¹¿æ’­
+//Ä£Äâ½ÓÊÜ¹ã²¥
 bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 	int currentfilename;
-	//å¦‚æœç¬¬ä¸€æ¬¡æ¥å—å˜åŒ–
-	if (lastfilename==10)
+	//Èç¹ûµÚÒ»´Î½ÓÊÜ±ä»¯
+	if (lastfilename == 10)
 	{
 		currentfilename = rand();
-		if(currentfilename>=10){currentfilename= currentfilename % 10;}
-		string filename = "C:\\Users\\chongliu\\Desktop\\åäººè¿é€š\\è½¨è¿¹è§„åˆ’\\VisualStudiocode\\vehiclechangecondition"
-			+to_string(currentfilename)+".txt";
+		if (currentfilename >= 10) { currentfilename = currentfilename % 10; }
+		string filename = "C:\\Users\\chongliu\\Desktop\\»ªÈËÔËÍ¨\\¹ì¼£¹æ»®\\VisualStudiocode\\vehiclechangecondition"
+			+ to_string(currentfilename) + ".txt";
 		ifstream infile;
-		gfstream <<"document name :"<< to_string(currentfilename)<<endl;
+		gfstream << "document name :" << to_string(currentfilename) << endl;
 		infile.open(filename);
 		bool park; int vertex1, vertex2;
-		while (!infile.eof())
+		while (!infile.eof() )
 		{
-			infile>> park >> vertex1 >> vertex2;
-			//cout <<"è½¦è¾†çŠ¶å†µ  "<< park << "  " << vertex1 << "   " << vertex2 << endl;
+			infile >> park >> vertex1 >> vertex2;
+			//cout <<"³µÁ¾×´¿ö  "<< park << "  " << vertex1 << "   " << vertex2 << endl;
 			if (IsNeighbor(vertex1, vertex2)) {
 				if (park == 1) {
 					totalweight[vertex1][vertex2] = Add(10, totalweight[vertex1][vertex2]);
@@ -698,7 +708,7 @@ bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 					totalweight[vertex2][vertex1] = Add(5, totalweight[vertex2][vertex1]);
 				}
 			}
-			//ä¸startä¸ç›¸é‚»
+			//Óëstart²»ÏàÁÚ
 			else {
 				if (park == 1) {
 					totalweight[vertex1][vertex2] = Add(7, totalweight[vertex1][vertex2]);
@@ -713,7 +723,7 @@ bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 		infile.close();
 		Showtotalweight();
 		lastfilename = currentfilename;
-		return true;		 		     
+		return true;
 	}//if (lastfilename==10)
 	else
 	{
@@ -726,7 +736,7 @@ bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 		else
 		{
 
-			string filename = "C:\\Users\\chongliu\\Desktop\\åäººè¿é€š\\è½¨è¿¹è§„åˆ’\\VisualStudiocode\\vehiclechangecondition"
+			string filename = "C:\\Users\\chongliu\\Desktop\\»ªÈËÔËÍ¨\\¹ì¼£¹æ»®\\VisualStudiocode\\vehiclechangecondition"
 				+ to_string(currentfilename) + ".txt";
 			ifstream infile;
 			infile.open(filename);
@@ -734,7 +744,7 @@ bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 			while (!infile.eof())
 			{
 				infile >> park >> vertex1 >> vertex2;
-				//cout << "è½¦è¾†çŠ¶å†µ  " << park << "  " << vertex1 << "   " << vertex2 << endl;
+				//cout << "³µÁ¾×´¿ö  " << park << "  " << vertex1 << "   " << vertex2 << endl;
 				if (IsNeighbor(vertex1, vertex2)) {
 					if (park == 1) {
 						totalweight[vertex1][vertex2] = Add(10, totalweight[vertex1][vertex2]);
@@ -745,7 +755,7 @@ bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 						totalweight[vertex2][vertex1] = Add(5, totalweight[vertex2][vertex1]);
 					}
 				}
-				//ä¸startä¸ç›¸é‚»
+				//Óëstart²»ÏàÁÚ
 				else {
 					if (park == 1) {
 						totalweight[vertex1][vertex2] = Add(7, totalweight[vertex1][vertex2]);
@@ -765,23 +775,23 @@ bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 	}//else
 
 }
-//ä¸´æ—¶å»ºç«‹è½¦è¾†å˜åŒ–æ–‡ä»¶
+//ÁÙÊ±½¨Á¢³µÁ¾±ä»¯ÎÄ¼ş
 void Graph::Tempcreatfile() {
 	for (int i = 0; i < 10; i++)
 	{
 		fstream f;
-		string filename="C:\\Users\\chongliu\\Desktop\\åäººè¿é€š\\è½¨è¿¹è§„åˆ’\\VisualStudiocode\\vehiclechangecondition"
+		string filename = "C:\\Users\\chongliu\\Desktop\\»ªÈËÔËÍ¨\\¹ì¼£¹æ»®\\VisualStudiocode\\vehiclechangecondition"
 			+ to_string(i) + ".txt";
-		f.open(filename, ios::app);
+		f.open(filename, ios::out);
 		if (f.bad())
 		{
-			cout << "æ‰“å¼€æ–‡ä»¶å‡ºé”™" << endl;
+			cout << "´ò¿ªÎÄ¼ş³ö´í" << endl;
 			return;
 		}
-		for (size_t i = 0; i < 200; i++)
+		for (size_t i = 0; i < 100; i++)
 		{
 			int random = rand();
-			random = random % 200;
+			random = random % vernum;
 			vector<int> neighbor = GetNeighbor(random);
 			for (auto beg = neighbor.begin(); beg != neighbor.end(); beg++)
 			{
@@ -793,36 +803,36 @@ void Graph::Tempcreatfile() {
 				}
 			}
 		}//for (size_t i = 0; i < 200; i++)
-		
+
 		f.close();
 	}//for (int i = 0; i < 10; i++)
 }
 void Graph::Showtotalweight() {
 	fstream f;
-	string filename = "C:\\Users\\chongliu\\Desktop\\åäººè¿é€š\\è½¨è¿¹è§„åˆ’\\VisualStudiocode\\totalweight.txt";
-	f.open(filename,ios::out);
+	string filename = "C:\\Users\\chongliu\\Desktop\\»ªÈËÔËÍ¨\\¹ì¼£¹æ»®\\VisualStudiocode\\totalweight.txt";
+	f.open(filename, ios::out);
 	if (f.bad())
 	{
-		cout << "æ‰“å¼€æ–‡ä»¶å‡ºé”™" << endl;
+		cout << "´ò¿ªÎÄ¼ş³ö´í" << endl;
 		return;
 	}
 
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < vernum; i++)
 	{
 		vector<int> v = GetNeighbor(i);
-		f << "p" << i ;
-		for (auto beg = v.begin(); beg != v.end();beg++) {
+		f << "p" << i;
+		for (auto beg = v.begin(); beg != v.end(); beg++) {
 			f << "-->p" << *beg << "[ " << totalweight[i][*beg] << " ]  ";
 		}
 		f << "\n";
 	}
 	f.close();
-	
+
 }
 void Graph::Updateopenlist() {
 	queue<Vertex*>  tmp2;
 	Vertex* v;
-	//å°†openlistçš„å…ƒç´ å…¨éƒ¨å¼¹å‡ºè£…å…¥tmp2ä¸­
+	//½«openlistµÄÔªËØÈ«²¿µ¯³ö×°Èëtmp2ÖĞ
 	while (!openlist.empty())
 	{
 		v = openlist.top();
@@ -831,18 +841,17 @@ void Graph::Updateopenlist() {
 		if (v->g < v->rhs) { openlistcountglessrhs--; }
 	}
 	//cout << " open list pop done" << endl;
-	//å°†tmp2çš„å…ƒç´ ä¸€ä¸ªä¸€ä¸ªå¼¹å‡º-æ›´æ–°-åŠ å…¥open listæˆ–close list
-	while ( !tmp2.empty() )
+	//½«tmp2µÄÔªËØÒ»¸öÒ»¸öµ¯³ö-¸üĞÂ-¼ÓÈëopen list»òclose list
+	while (!tmp2.empty())
 	{
-		
+
 		v = tmp2.front();
-		
+
 		tmp2.pop();
-		//å› ä¸ºopen listç°åœ¨ä¸ºç©ºéœ€è¦è·³è¿‡ if (ver.isinopen)å› ä¸ºå·²ç»ä»open listä¸­é™¤å»äº†
+		//ÒòÎªopen listÏÖÔÚÎª¿ÕĞèÒªÌø¹ı if (ver.isinopen)ÒòÎªÒÑ¾­´Óopen listÖĞ³ıÈ¥ÁË
 		v->isinopen = false;
 		UpdateVertex(v->name);
 	}
-	gfstream << "æ›´æ–°openlist finishï¼š----------------------------------------------------" << endl;
+	gfstream << "¸üĞÂopenlist finish£º----------------------------------------------------" << endl;
 	//Showopenlist();
 }
-
