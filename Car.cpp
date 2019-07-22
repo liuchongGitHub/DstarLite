@@ -3,19 +3,18 @@
 #include<vector>
 #include<queue>
 #include<set>
-#include"windows.h"
 #include<time.h>
 #include <fstream>
+#include<stack>
 #include<thread>
 #include <mutex>
 #include"Vertex.h"
 #include"ParkGraph.h"
 #include"Car.h"
-Car::Car(Graph *graph, int start, int goal, int carname) 
+using namespace std;
+Car::Car(Graph *graph,int carname) 
 {
 	this->graph = graph;
-	this->start = start;
-	this->goal = goal;
 	this->carname = carname;
 	vertex = new Vertex[graph->vernum];
 	//cout << "输入每个顶点的坐标x&y"<<endl;
@@ -193,7 +192,7 @@ void Car::UpdateVertex(int name) {
 		}
 		Caculatekey(name);
 		//如果点发生改变则显示出来
-
+		/*
 		if (oldver.g != ver.g || oldver.rhs != ver.rhs || oldver.next != ver.next) {
 			Vertex* s = &oldver;
 			gfstream << "*****************************" << endl;
@@ -202,7 +201,7 @@ void Car::UpdateVertex(int name) {
 			Showvertex(ver.name);
 			gfstream << "*****************************" << endl;
 			gfstream << "\n";
-		}
+		}*/
 		/*
 		if (point!=NULL && point->name!= ver.next->name) {
 			cout << name << "点原next=" << point->name << " 现next=" << ver.next->name << "    " << name
@@ -241,14 +240,14 @@ void Car::UpdateVertex(int name) {
 		openlist.push(s);
 		if (s->g < s->rhs) { openlistcountglessrhs++; }
 		s->isinopen = true;
-		gfstream << name << " 点加入openlist" << endl;
+		//gfstream << name << " 点加入openlist" << endl;
 		//Showvertex(name);
 
 		auto ifincloselist = closelist.find(s);
 		if (ifincloselist != closelist.end())
 		{
 			closelist.erase(ifincloselist);
-			gfstream << "delete closelist point:" << s->name << endl;
+			//gfstream << "delete closelist point:" << s->name << endl;
 		}
 	}
 	else {
@@ -260,10 +259,12 @@ void Car::UpdateVertex(int name) {
 	//cout << "updatevertex done";
 }
 //程序入口
-void Car::Mainmethod() {
-	cout << "输入起点和终点：";
-	cin >> start >> goal;
-	cout << endl;
+void Car::DstarLite() {
+	//cout << "输入起点和终点：";
+	//cin >> start >> goal;
+	//cout << endl;
+	start =188;
+	goal = 2930;
 	SetStartandGoal(start, goal);
 	//初始化h
 	for (int i = 0; i < graph->vernum; i++)
@@ -272,7 +273,8 @@ void Car::Mainmethod() {
 	}
 	//初始化算法
 	Init();
-	cout << "inti done" << endl;
+	clock_t starttime = clock();
+	//cout << "inti done" << endl;
 	Computepath();
 	lastfilename = graph->Returnlastfilename();
 	while (start != goal)//当车辆没有走完全程时
@@ -292,17 +294,20 @@ void Car::Mainmethod() {
 				weight[next.name][start] = INT_MAX;
 
 			}
-			cout << "car" << carname << "行驶中" <<start<<"行驶过花费"<< 
-				totalweight[start][next.name] / speed <<"s"<< endl;
+			//cout << "car" << carname << "行驶中" <<start<<"行驶过花费"<< 
+				//totalweight[start][next.name] / speed <<"s"<< endl;
 			this_thread::sleep_for(std::chrono::seconds(totalweight[start][next.name] / speed));
 			//走totalweight[start][next.name] / speed秒
 			gfstream << " 点 " << start << "点走过" << endl;
 			SetStartandGoal(next.name, goal);
-			cout << time <<"s"<< endl;
+			//cout << time <<"s"<< endl;
 			gfstream << " 点 " << start << " 设为新起始点" << endl;
 		}//while (time<15 && start != goal)
 		//如果到达终点跳出while (start!=goal)
-		if (start == goal) { cout << "break" << endl; break; }
+		if (start == goal) { //cout << "break" << endl; 
+			clock_t endtime = clock();
+			gfstream << "totaltime" << endtime - starttime << endl;
+			break; }
 		//记录原先的权值
 		int** oldweight;
 		oldweight = new int*[graph->vernum];
@@ -335,7 +340,7 @@ void Car::Mainmethod() {
 					}
 				}
 			}
-			cout << " different has " << different << endl;
+			//cout << " different has " << different << endl;
 			//更新updatelist的元素
 			while (!updatelist.empty())
 			{
@@ -355,7 +360,7 @@ void Car::Mainmethod() {
 			gfstream << "重新计算路径" << endl;
 			Computepath();
 		}//if(lastfilename=graph->Returnlastfilename())
-		else { cout << "路径没变 lastfilename="<<lastfilename << endl; }
+		//else { cout << "路径没变 lastfilename="<<lastfilename << endl; }
 		//释放oldweight
 		for (size_t i = 0; i < graph->vernum; i++)
 		{
@@ -364,7 +369,9 @@ void Car::Mainmethod() {
 		}
 		delete oldweight;
 	}//while (start!=goal)
-	cout << "main complete" << endl;
+	
+	//cout << "totaltime" << endtime - starttime;
+	cout << "car"<<carname<<" complete" << endl;
 }
 void Car::Computepath() {
 	gfstream << "计算从" << start << "到" << goal << "的最短路径" << endl;
@@ -374,7 +381,7 @@ void Car::Computepath() {
 		|| openlistcountglessrhs != 0)
 	{
 
-		gfstream << "compute path openlist------------------------------------------" << endl;
+		//gfstream << "compute path openlist------------------------------------------" << endl;
 		//弹出队头
 		Vertex* s = openlist.top();
 		openlist.pop();
@@ -398,7 +405,7 @@ void Car::Computepath() {
 
 			s->g = INT_MAX;
 			closelist.erase(s);
-			gfstream << " delete point " << s->name << endl;
+			//gfstream << " delete point " << s->name << endl;
 			UpdateVertex(s->name);
 			vector<int> neighbor = graph->GetNeighbor(s->name);
 			for (auto beg = neighbor.begin(), end = neighbor.end(); beg != end; beg++)
@@ -407,7 +414,7 @@ void Car::Computepath() {
 			}
 
 		}
-		if (openlist.empty()) { cout << "openlist empty" << endl; }
+		//if (openlist.empty()) { cout << "openlist empty" << endl; }
 		//输出openlist中的点信息
 		//cout << "完成一次compute--------------------------------------------"<<endl;
 		//cout << "完成一次compute--------------------------------------------"<<endl;
@@ -438,22 +445,21 @@ void Car::Computepath() {
 
 	if (!path.empty()) {
 		Vertex *vpath = &path.front();
-		cout << "-------------------------------------------------------------------" << endl;
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
-		cout << "最短路径：         ";
+		gfstream << "-------------------------------------------------------------------" << endl;
+		//cout << "最短路径：         ";
 		gfstream << "最短路径：         ";
 		int distance = 0;
 
 		while (vpath != NULL)
 		{
-			cout << vpath->name;
+			//cout << vpath->name;
 			gfstream << vpath->name;
 			int front = vpath->name;
 			int real = vpath->name;
 
 			if (vpath->next != NULL)
 			{
-				cout << "->";
+				//cout << "->";
 				gfstream << "->";
 				real = vpath->next->name;
 			}
@@ -462,16 +468,15 @@ void Car::Computepath() {
 
 		}
 
-		cout << "total:" << distance;
-		cout << endl;
+		//cout << "total:" << distance;
+		//cout << endl;
 		gfstream << "total:" << distance;
 		gfstream << endl;
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-		cout << "耗时：" << time2 - time1 << " ms" << endl;
+	
+		//cout << "耗时：" << time2 - time1 << " ms" << endl;
 		gfstream << "耗时：" << time2 - time1 << " ms" << endl;
 	}
-	Dijkstra();
-	cout << "-------------------------------------------------------------------" << endl;
+	gfstream << "-------------------------------------------------------------------" << endl;
 }
 
 //展示点的信息
@@ -544,15 +549,14 @@ void Car::Showcloselist() {
 		Showvertex(*beg);
 	}
 }
-void Car::Dijkstra() {
+void Car::ComputeDijkstra() {
 	//初始化
 	for (size_t i = 0; i < graph->vernum; i++)
 	{
 		vertex[i].distance = totalweight[start][i];
 		vertex[i].visit = false;
-		vertex[i].Dpath = "";
+		vertex[i].next = NULL;
 	}
-
 	vertex[start].distance = 0;
 	int count = 1;
 	clock_t time1 = clock();
@@ -566,6 +570,8 @@ void Car::Dijkstra() {
 				temp = i;
 			}
 		}
+		if (temp == goal) { break; }
+		//将temp设置为新的发起点
 		vertex[temp].visit = true;
 		++count;
 		for (int i = 0; i < graph->vernum; i++) {
@@ -573,18 +579,98 @@ void Car::Dijkstra() {
 			if (!vertex[i].visit && totalweight[temp][i] != INT_MAX && (Add(vertex[temp].distance, totalweight[temp][i])) <= vertex[i].distance) {
 				//如果新得到的边可以影响其他为访问的顶点，那就就更新它的最短路径和长度
 				vertex[i].distance = vertex[temp].distance + totalweight[temp][i];
-				vertex[i].Dpath = vertex[temp].Dpath + "->" + to_string(i);
+			    vertex[i].next=&vertex[temp];
 			}
 		}
-
+		//gfstream << temp << " next " << vertex[temp].next->name << endl;
 	}//while (count!=vernum)
+	/*for (int i = 0; i < graph->vernum; i++)
+	{
+		Showvertex(i);
+	}*/
+	stack<Vertex *> stack0;
+	Vertex *point = &vertex[goal];
+	while (point != NULL) {
+		stack0.push(point);
+		point = point->next;
+	}
 	clock_t time2 = clock();
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
-	cout << "Dijkstra最短路径为:" << start << vertex[goal].Dpath << "total:" << vertex[goal].distance << endl;
-	gfstream << "Dijkstra最短路径为:" << start << vertex[goal].Dpath << "total:" << vertex[goal].distance << endl;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-	cout << "耗时：" << time2 - time1 << " ms" << endl;
+	gfstream << "Dijkstra最短路径为:";
+	//cout << "Dijkstra最短路径为:";
+	
+	while (!stack0.empty())
+	{
+		point = stack0.top();
+		path.push(*point);
+		stack0.pop();
+		gfstream << point->name;
+		//cout << point->name;
+		if (!stack0.empty()) { gfstream << "->"; //cout << "->";
+		}
+	}
+	gfstream << "total:" << vertex[goal].distance << endl;
 	gfstream << "耗时：" << time2 - time1 << " ms" << endl;
+	//cout << "total:" << vertex[goal].distance << endl;
+	//cout << "耗时：" << time2 - time1 << " ms" << endl;
+	//cout << start <<"   "<<goal << endl;
+}
+void Car::Dijkstra() {
+	//cout << "输入起点和终点：";
+	//cin >> start >> goal;
+	//cout << endl;
+	start = 188;
+	goal = 2930;
+	SetStartandGoal(start, goal);
+	//初始化算法
+	Init();
+	clock_t starttime = clock();
+	//cout << "inti done" << endl;
+	ComputeDijkstra();
+	while (start != goal)//当车辆没有走完全程时
+	{
+		int time = 0;
+		while (time < 4 && start != goal)
+		{
+			Vertex *next =&path.front() ;
+			path.pop();
+			time = time + (totalweight[start][next->name] / speed);
+			finish[start][next->name]++;
+			finish[next->name][start]++;
+			//如果路径反复走过3遍则不能再走
+			if (finish[start][next->name] >= 3)
+			{
+				weight[start][next->name] = INT_MAX;
+				weight[next->name][start] = INT_MAX;
+
+			}
+			gfstream << "car" << carname << "行驶中" << start << "行驶过花费" <<
+				totalweight[start][next->name] / speed << "s" << endl;
+			//cout << "car" << carname << "行驶中" << start << "行驶过花费" <<
+				//totalweight[start][next->name] / speed << "s" << endl;
+			this_thread::sleep_for(std::chrono::seconds(totalweight[start][next->name] / speed));
+			//走totalweight[start][next.name] / speed秒
+			gfstream << " 点 " << start << "点走过" << endl;
+			//cout<< " 点 " << start << "点走过" << endl;
+			SetStartandGoal(next->name, goal);
+			gfstream << " 点 " << start << " 设为新起始点" << endl;
+			//cout << " 点 " << start << " 设为新起始点" << endl;
+		}//while (time<15 && start != goal)
+		//如果到达终点跳出while (start!=goal)
+		if (start == goal) { //cout << "break" << endl; 
+			break; }
+		//从停车场接受路面变化
+		if (lastfilename != graph->Returnlastfilename()) {
+
+			graph->SetTotalWeight(totalweight, start, weight, lastfilename);
+			gfstream << " 路径权发生变化" << endl;		
+			gfstream << "重新计算路径" << endl;
+			ComputeDijkstra();
+		}//if(lastfilename=graph->Returnlastfilename())		
+	}//while (start != goal)
+	clock_t endtime = clock();
+	gfstream << "totaltime" << endtime - starttime;
+	cout << "car" << carname << " complete" << endl;
+	//cout << "Dijkstra done" << endl;
 }
 void Car::Showtotalweight() {
 	fstream f;

@@ -15,7 +15,6 @@ struct Vertex
 	int y;//顶点的纵坐标
 	bool isinopen;//是否在优先队列
 	Vertex *next;//指向下一个顶点的指针
-	std::string Dpath;//用于记录Dijkstra算法求出的路径
 	int distance;//用于记录Dijkstra算法的路径长度
 	bool visit;//用于记录Dijkstra算法是否搜索过
 };

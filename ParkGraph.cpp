@@ -6,15 +6,15 @@
 #include<string.h>
 #include<thread>
 #include <mutex>
-#include"windows.h"
+
 using namespace std;
 
 
-//åˆ›å»ºGraph
+//´´½¨Graph
 void Graph::CreatGraph()
 {
-	vernum = 10000;
-	weight = new int*[vernum];//åˆå§‹åŒ–åŸºæœ¬æƒå€¼çŸ©é˜µweight
+	vernum = 8000;
+	weight = new int*[vernum];//³õÊ¼»¯»ù±¾È¨Öµ¾ØÕóweight
 	for (size_t i = 0; i < vernum; i++)
 	{
 		weight[i] = new int[vernum];
@@ -31,9 +31,9 @@ void Graph::CreatGraph()
 	}
 	Tempcreatfile();
 }
-//æ„é€ å‡½æ•°
+//¹¹Ôìº¯Êı
 Graph::Graph() { }
-//ææ„å‡½æ•°
+//Îö¹¹º¯Êı
 Graph::~Graph()
 {
 	for (size_t i = 0; i < vernum; i++)
@@ -52,7 +52,7 @@ int Graph::Add(int left, int right) {
 		return left + right;
 	}
 }
-//è¿”å›nameç‚¹çš„é‚»å±…èŠ‚ç‚¹
+//·µ»ØnameµãµÄÁÚ¾Ó½Úµã
 vector<int> Graph::GetNeighbor(int name, int** weight) {
 	vector<int> neighbor;
 	for (int i = 0; i < vernum; i++) {
@@ -79,11 +79,11 @@ bool Graph::IsNeighbor(int name1, int name2, int** weight) {
 int Graph::Returnlastfilename() {
 	return lastfilename;
 }
-//æ¨¡æ‹Ÿæ¥å—å¹¿æ’­
+//Ä£Äâ½ÓÊÜ¹ã²¥
 bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 	graphmutex.lock();
 	int currentfilename;
-	//å¦‚æœç¬¬ä¸€æ¬¡æ¥å—å˜åŒ–
+	//Èç¹ûµÚÒ»´Î½ÓÊÜ±ä»¯
 	if (lastfilename == 10)
 	{
 		currentfilename = rand();
@@ -109,23 +109,32 @@ bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 	}//else
 	
 }
-//ä¸´æ—¶å»ºç«‹è½¦è¾†å˜åŒ–æ–‡ä»¶
+//ÁÙÊ±½¨Á¢³µÁ¾±ä»¯ÎÄ¼ş
 void Graph::Tempcreatfile() {
 	for (int i = 0; i < 10; i++)
 	{
 		fstream f;
-		string filename = "C:\\Users\\chongliu\\Desktop\\åäººè¿é€š\\è½¨è¿¹è§„åˆ’\\VisualStudiocode\\vehiclechangecondition"
+		string filename = "C:\\Users\\chongliu\\Desktop\\»ªÈËÔËÍ¨\\¹ì¼£¹æ»®\\VisualStudiocode\\vehiclechangecondition"
 			+ to_string(i) + ".txt";
 		f.open(filename, ios::out);
 		if (f.bad())
 		{
-			cout << "æ‰“å¼€æ–‡ä»¶å‡ºé”™" << endl;
+			cout << "´ò¿ªÎÄ¼ş³ö´í" << endl;
 			return;
 		}
-		for (size_t i = 0; i < 100; i++)
+		for (size_t i = 0; i < 50; i++)
 		{
 			int random = rand();
 			random = random % vernum;
+			for (int i = 0; i < vernum; i++)
+			{
+				if (weight[random][i] != INT_MAX) {
+					f << 1 << " " << random << " " << i << "\n";
+					cout << 1 << " " << random << " " << i << "\n";
+					break;
+				}
+			}
+			/*
 			vector<int> neighbor = GetNeighbor(random);
 			for (auto beg = neighbor.begin(); beg != neighbor.end(); beg++)
 			{
@@ -135,7 +144,7 @@ void Graph::Tempcreatfile() {
 					f << 1 << " " << random << " " << *beg << "\n";
 					cout << 1 << " " << random << " " << *beg << "\n";
 				}
-			}
+			}*/
 		}//for (size_t i = 0; i < 200; i++)
 
 		f.close();
@@ -153,9 +162,9 @@ void Graph::SetWeight(int** targetweight) {
 	graphmutex.unlock();
 }
 void Graph::SetTotalWeight(int** targetweight,int start,int** weight,int lastfilename) {
-	// é˜²æ­¢åœ¨æ›´æ–°æ—¶carè®¿é—®weight, totalweight, finish
+	// ·ÀÖ¹ÔÚ¸üĞÂÊ±car·ÃÎÊweight, totalweight, finish
 	graphmutex.lock();
-	string filename = "C:\\Users\\chongliu\\Desktop\\åäººè¿é€š\\è½¨è¿¹è§„åˆ’\\VisualStudiocode\\vehiclechangecondition"
+	string filename = "C:\\Users\\chongliu\\Desktop\\»ªÈËÔËÍ¨\\¹ì¼£¹æ»®\\VisualStudiocode\\vehiclechangecondition"
 		+ to_string(lastfilename) + ".txt";
 	ifstream infile;
 	infile.open(filename);
@@ -163,7 +172,7 @@ void Graph::SetTotalWeight(int** targetweight,int start,int** weight,int lastfil
 	while (!infile.eof())
 	{
 		infile >> park >> vertex1 >> vertex2;
-		//cout <<"è½¦è¾†çŠ¶å†µ  "<< park << "  " << vertex1 << "   " << vertex2 << endl;
+		//cout <<"³µÁ¾×´¿ö  "<< park << "  " << vertex1 << "   " << vertex2 << endl;
 		if (IsNeighbor(vertex1, vertex2,weight)) {
 			if (park == 1) {
 				targetweight[vertex1][vertex2] = Add(10, targetweight[vertex1][vertex2]);
@@ -174,7 +183,7 @@ void Graph::SetTotalWeight(int** targetweight,int start,int** weight,int lastfil
 				targetweight[vertex2][vertex1] = Add(5, targetweight[vertex2][vertex1]);
 			}
 		}
-		//ä¸startä¸ç›¸é‚»
+		//Óëstart²»ÏàÁÚ
 		else {
 			if (park == 1) {
 				targetweight[vertex1][vertex2] = Add(7, targetweight[vertex1][vertex2]);
@@ -194,7 +203,7 @@ void Graph::Mainmethod() {
 	while (1) {	
 		RequirevehicleFromWindowsFile(lastfilename);
 		//cout << "lastfilename= " << lastfilename << endl;
-		this_thread::sleep_for(std::chrono::seconds(4));//4ç§’
+		this_thread::sleep_for(std::chrono::seconds(4));//4Ãë
 		
 	}
 }

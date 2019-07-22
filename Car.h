@@ -52,7 +52,7 @@ private:
 
 public:
 	Car() {};
-	Car(Graph* graph1, int start, int goal, int carname);
+	Car(Graph* graph1, int carname);
 	~Car();
 	//初始化vertex,gfstream
 	//初始化终点
@@ -78,7 +78,8 @@ public:
 	//只有updatevertex能将点加入openlist
 	void UpdateVertex(int name);
 	//程序入口
-	void Mainmethod();
+	void DstarLite();
+	void ComputeDijkstra();
 	void Computepath();
 
 	//展示点的信息
