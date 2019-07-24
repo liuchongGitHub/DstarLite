@@ -29,6 +29,12 @@ void Graph::CreatGraph()
 			}
 		}
 	}
+	ifstream fi;
+	fi.open("configuration");
+	string str;
+	fi>>str;
+	if(str=="filepath"){ fi>>filepath;}
+	fi.close();
 	Tempcreatfile();
 }
 //构造函数
@@ -113,8 +119,9 @@ bool Graph::RequirevehicleFromWindowsFile(int &lastfilename) {
 void Graph::Tempcreatfile() {
 	for (int i = 0; i < 10; i++)
 	{
+		
 		fstream f;
-		string filename = "/home/ubuntu16/vehiclechangecondition"
+		string filename = filepath+"/vehiclechangecondition"
 			+ to_string(i) + ".txt";
 		f.open(filename, ios::out);
 		if (f.bad())
@@ -164,11 +171,10 @@ void Graph::SetWeight(int** targetweight) {
 void Graph::SetTotalWeight(int** targetweight,int start,int** weight,int lastfilename) {
 	// 防止在更新时car访问weight, totalweight, finish
 	graphmutex.lock();
-	string filename ="/home/ubuntu16/vehiclechangecondition"
+	string filename =filepath+"/vehiclechangecondition"
 		+ to_string(lastfilename) + ".txt";
 	ifstream infile;
 	infile.open(filename);
-	cout<<""<<endl;
 	bool park; int vertex1, vertex2;
 	while (!infile.eof())
 	{
@@ -208,4 +214,3 @@ void Graph::Mainmethod() {
 
 	}
 }
-
