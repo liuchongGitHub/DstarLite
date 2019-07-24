@@ -16,16 +16,17 @@ private:
 	int carname;
 	Graph *graph;
 	int speed = 4;
-	Vertex *vertex;//È«²¿¶¥µã
-	int start;//ÆğÊ¼µã
-	int goal;//Ä¿±êµã
-	int openlistcountglessrhs;//open listÖĞg¡¶rhsµÄÊıÁ¿
-	fstream gfstream;//ÏòÎÄ¼şÖĞÊäÈë¿ØÖÆÌ¨ĞÅÏ¢
+	Vertex *vertex;//å…¨éƒ¨é¡¶ç‚¹
+	int start;//èµ·å§‹ç‚¹
+	int goal;//ç›®æ ‡ç‚¹
+	int openlistcountglessrhs;//open listä¸­gã€Šrhsçš„æ•°é‡
+	string filepath;//é…ç½®æ–‡ä»¶ä¸­çš„æ–‡ä»¶è·¯å¾„
+	fstream gfstream;//å‘æ–‡ä»¶ä¸­è¾“å…¥æ§åˆ¶å°ä¿¡æ¯
 	int totaltime=0;
 	int lastfilename;
-	int **weight;//³õÊ¼È¨ÖµÁÚ½Ó¾ØÕó
-	int **totalweight;//×îÖÕÈ¨ÖµÁÚ½Ó¾ØÕó
-	int **finish;//¼ÇÂ¼×ß¹ıÂ·¾¶´ÎÊı
+	int **weight;//åˆå§‹æƒå€¼é‚»æ¥çŸ©é˜µ
+	int **totalweight;//æœ€ç»ˆæƒå€¼é‚»æ¥çŸ©é˜µ
+	int **finish;//è®°å½•èµ°è¿‡è·¯å¾„æ¬¡æ•°
 	struct cmp
 	{
 		bool operator() (Vertex *v1, Vertex *v2)
@@ -44,26 +45,26 @@ private:
 
 	};
 	priority_queue<Vertex*, vector<Vertex*>, cmp> openlist;
-	//µã¸üĞÂĞòÁĞ
+	//ç‚¹æ›´æ–°åºåˆ—
 	priority_queue<Vertex*, vector<Vertex*>, cmp2> updatelist;
-	queue<Vertex> path;//×î¶ÌÂ·¾¶
+	queue<Vertex> path;//æœ€çŸ­è·¯å¾„
 	set<Vertex*> closelist;
 
 public:
 	Car() {};
 	Car(Graph* graph1, int carname);
 	~Car();
-	//³õÊ¼»¯vertex,gfstream
-	//³õÊ¼»¯ÖÕµã
+	//åˆå§‹åŒ–vertex,gfstream
+	//åˆå§‹åŒ–ç»ˆç‚¹
 	void Init();
 	bool Requirelastfilename();
-	//ÖØĞÂÉèÖÃÆğµãºÍÖÕµã
+	//é‡æ–°è®¾ç½®èµ·ç‚¹å’Œç»ˆç‚¹
 	void SetStartandGoal(int start, int goal);
 	
-	//¼ÆËãManhattan¾àÀë
+	//è®¡ç®—Manhattanè·ç¦»
 	int Manhattan(int start, int target);
 
-	//¼ÆËãkey1&key2
+	//è®¡ç®—key1&key2
 	void Caculatekey(int name);
 
 	//name1.key<name2.key?
@@ -71,17 +72,17 @@ public:
 	//name1.key<name2.key?
 	bool Compare_key(Vertex* one, Vertex* two);
 
-	//¸üĞÂ½Úµã
-	//Èç¹ûµãÔÚopenlistÖĞÔò³ıÈ¥
-	//½«rhs£¡=gµÄµã¼ÓÈëopenlist
-	//Ö»ÓĞupdatevertexÄÜ½«µã¼ÓÈëopenlist
+	//æ›´æ–°èŠ‚ç‚¹
+	//å¦‚æœç‚¹åœ¨openlistä¸­åˆ™é™¤å»
+	//å°†rhsï¼=gçš„ç‚¹åŠ å…¥openlist
+	//åªæœ‰updatevertexèƒ½å°†ç‚¹åŠ å…¥openlist
 	void UpdateVertex(int name);
-	//³ÌĞòÈë¿Ú
+	//ç¨‹åºå…¥å£
 	void DstarLite();
 	void ComputeDijkstra();
 	void Computepath();
 
-	//Õ¹Ê¾µãµÄĞÅÏ¢
+	//å±•ç¤ºç‚¹çš„ä¿¡æ¯
 	void Showvertex(int name);
 	void Showvertex(Vertex* pointer);
 	int Add(int left, int right);
