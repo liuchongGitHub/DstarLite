@@ -4,7 +4,6 @@
 #include<vector>
 #include<queue>
 #include<set>
-#include"windows.h"
 #include<time.h>
 #include <fstream>
 #include<thread>
