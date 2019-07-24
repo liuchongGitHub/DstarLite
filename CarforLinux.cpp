@@ -67,6 +67,7 @@ Car::Car(Graph *graph,int carname)
 
 		}
 	}
+	
 
 }
 Car::~Car() {
@@ -90,7 +91,19 @@ Car::~Car() {
 //初始化vertex,gfstream
 //初始化终点
 void Car::Init() {
-	string filename = "/home/ubuntu16/carmessage" + to_string(carname) + ".txt";
+	ifstream f;
+	f.open("configuration");
+	string str;
+	int tempstart,tempgoal;
+	f>>str;
+	if(str=="filepath"){ f>>filepath;}
+	f>>str;
+	if(str=="start"){f>>tempstart;}
+	f>>str;
+	if(str=="goal"){f>>tempgoal;}
+	f.close();
+	SetStartandGoal(tempstart,tempgoal);
+	string filename = filepath+"/carmessage" + to_string(carname) + ".txt";
 	gfstream.open(filename, ios::out);
 	if (gfstream.bad())
 	{
@@ -267,12 +280,6 @@ void Car::UpdateVertex(int name) {
 }
 //程序入口
 void Car::DstarLite() {
-	//cout << "输入起点和终点：";
-	//cin >> start >> goal;
-	//cout << endl;
-	start = 188;
-	goal = 450;
-	SetStartandGoal(start, goal);
 	//初始化h
 	for (int i = 0; i < graph->vernum; i++)
 	{
@@ -627,15 +634,6 @@ void Car::ComputeDijkstra() {
 	//cout << start <<"   "<<goal << endl;
 }
 void Car::Dijkstra() {
-       //cout<<"in dijkstra619"<<endl;
-	//cout<<"(vertex[goal].next==NULL)"<<(vertex[2930].next==NULL)<<"goal"<<goal<<endl;
-	//cout << "输入起点和终点：";
-	//cin >> start >> goal;
-	//cout << endl;
-	start = 188;
-	goal = 450;
-	//cout<<"(vertex[goal].next==NULL)"<<(vertex[goal].next==NULL)<<"goal"<<goal<<endl;
-	SetStartandGoal(start, goal);
 	//初始化算法
 	//cout<<"(vertex[goal].next==NULL)"<<(vertex[goal].next==NULL)<<"goal"<<goal<<endl;
 	Init();
@@ -701,7 +699,7 @@ void Car::Dijkstra() {
 }
 void Car::Showtotalweight() {
 	fstream f;
-	string filename = "/home/ubuntu16/totalweight.txt";
+	string filename = "/home/nvidia/Desktop/totalweight.txt";
 	f.open(filename, ios::out);
 	if (f.bad())
 	{
