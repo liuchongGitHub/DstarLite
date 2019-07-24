@@ -15,28 +15,29 @@ class Graph
 public:
 	Graph();
 	~Graph();
-	void CreatGraph();//´´½¨Í¼
-	vector<int> GetNeighbor(int name, int** weight);//·µ»ØµãnameµÄÁÚ¾Ó
+	void CreatGraph();//åˆ›å»ºå›¾
+	vector<int> GetNeighbor(int name, int** weight);//è¿”å›ç‚¹nameçš„é‚»å±…
 	vector<int> GetNeighbor(int name); 
 	bool IsNeighbor(int name1, int name2, int** weight);//
 	bool RequirevehicleFromWindowsFile(int& lastfilename);
-	void Mainmethod();//³ÌĞòÈë¿Ú
-	//ÁÙÊ±´´½¨Í£³µ³¡ÄÚ»·¾³±ä»¯µÄÎÄ¼ş
+	void Mainmethod();//ç¨‹åºå…¥å£
+	//ä¸´æ—¶åˆ›å»ºåœè½¦åœºå†…ç¯å¢ƒå˜åŒ–çš„æ–‡ä»¶
 	void Tempcreatfile();
 	int Add(int left, int right);
-	//ÉèÖÃcarµÄ³õÊ¼weight
+	//è®¾ç½®carçš„åˆå§‹weight
 	void SetWeight(int** targetweight);
-	//ÉèÖÃcarµÄtotalweight
+	//è®¾ç½®carçš„totalweight
 	void SetTotalWeight(int** tragetweight,int start,int** weight,int lastfilename);
 	int Returnlastfilename();
-	int vernum;//¶¥µãÊıÄ¿
+	int vernum;//é¡¶ç‚¹æ•°ç›®
 private:
-	int lastfilename;//Ä¿Ç°³µÁ¾Çé¿ö
-	Vertex *vertex;//È«²¿¶¥µã
-	int **weight;//³õÊ¼È¨ÖµÁÚ½Ó¾ØÕó
-	//int** totalweight;//×îÖÕÈ¨ÖµÁÚ½Ó¾ØÕó
-	int edgenum;//±ßµÄÊıÄ¿
-	fstream gfstream;//ÏòÎÄ¼şÖĞÊäÈë¿ØÖÆÌ¨ĞÅÏ¢
+	int lastfilename;//ç›®å‰è½¦è¾†æƒ…å†µ
+	Vertex *vertex;//å…¨éƒ¨é¡¶ç‚¹
+	string filepath;
+	int **weight;//åˆå§‹æƒå€¼é‚»æ¥çŸ©é˜µ
+	//int** totalweight;//æœ€ç»ˆæƒå€¼é‚»æ¥çŸ©é˜µ
+	int edgenum;//è¾¹çš„æ•°ç›®
+	fstream gfstream;//å‘æ–‡ä»¶ä¸­è¾“å…¥æ§åˆ¶å°ä¿¡æ¯
 	mutex graphmutex;
 
 
