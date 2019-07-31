@@ -24,14 +24,19 @@ int main() {
 	graph.CreatGraph();
 	thread t1(&Graph::Mainmethod,&graph);
 	t1.detach();
-	//µØÍ¼´´½¨Íê±ÏÄ£ÄâÍ£³µ³¡
-	//this_thread::sleep_for(std::chrono::seconds(8));//10Ãë
-	thread t2(&addcarDijkstra, &graph, 0);
-	t2.detach();
-	thread t3(&addcarDstarLite, &graph, 1);
-	t3.detach();
+	//åœ°å›¾åˆ›å»ºå®Œæ¯•æ¨¡æ‹Ÿåœè½¦åœº
+	//this_thread::sleep_for(std::chrono::seconds(8));//10ç§’
+	
 	while (1) {
-
+		cout << "è¾“å…¥è½¦å· ä»¥åŠ 0=Dijkstra 1=D*Lite " << endl;
+		int carname, method;
+		cin >> carname >> method;
+		switch (method)
+		{
+		case 0: { thread t2(addcarDijkstra, &graph, carname); t2.detach(); break; }
+		case 1: { thread t3(addcarDstarLite, &graph, carname); t3.detach(); break; }
+		default: break;
+		}
 	}
 
 	return 0;
